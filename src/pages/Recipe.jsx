@@ -1,6 +1,7 @@
 import React from "react";
 import { useContext } from "react";
 import { recipeContext } from "../context/RecipeContext";
+import RecipeCard from "../components/RecipeCard";
 
 const Recipe = () => {
   const { recipes } = useContext(recipeContext);
@@ -9,13 +10,10 @@ const Recipe = () => {
     return <div className="text-white">No recipes found</div>
   }
 
-  return <div className="text-white">
+  return <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
     {recipes.map((recipe) => {
       return (
-        <div key={recipe.id}>
-          {console.log(recipe)}
-          <h1>{recipe.title}</h1>
-        </div>
+        <RecipeCard key={recipe.id} recipe={recipe} />
       );
     })}
   </div>

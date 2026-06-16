@@ -3,22 +3,31 @@ import { useForm } from "react-hook-form";
 import { useContext } from "react";
 import { recipeContext } from "../context/RecipeContext";
 import { nanoid } from "nanoid";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const Create = () => {
   const { register, reset, handleSubmit } = useForm();
   const { recipes, setRecipes } = useContext(recipeContext);
+  const navigate = useNavigate();
 
   const submitHandler = (data) => {
     data.id = nanoid();
     setRecipes([...recipes, data]);
+    toast.success("Recipe created successfully!", {
+      autoClose: 1000,
+    });
     reset();
+    setTimeout(() => {
+      navigate("/recipes");
+    }, 1000);
   };
 
   return (
     <form className="text-white" onSubmit={handleSubmit(submitHandler)}>
       <small className="text-red-500">This is how the error look</small>
       <input
-        {...register("image-url")}
+        {...register("image")}
         type="url"
         placeholder="Enter image url"
         className="w-full p-2 rounded-md border border-gray-300 mb-4"
@@ -45,14 +54,17 @@ const Create = () => {
         className="w-1/4 p-2 rounded-md border border-gray-300 mt-4 block"
         {...register("category")}
       >
-        <option value="cat-1" className="text-gray-700">
-          Category 1
+        <option value="breakfast" className="text-gray-700">
+          Breakfast
         </option>
-        <option value="cat-2" className="text-gray-700">
-          Category 2
+        <option value="lunch" className="text-gray-700">
+          Lunch
         </option>
-        <option value="cat-3" className="text-gray-700">
-          Category 3
+        <option value="supper" className="text-gray-700">
+          Supper
+        </option>
+        <option value="dinner" className="text-gray-700">
+          Dinner
         </option>
       </select>
 
