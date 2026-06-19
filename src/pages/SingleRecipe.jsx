@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { recipeContext } from "../context/RecipeContext";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -6,11 +6,17 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 const SingleRecipe = () => {
-  const { recipes, setRecipes } = useContext(recipeContext);
-  const params = useParams();
-  const recipe = recipes.find((recipe) => Number(recipe.id) === Number(params.id));
+  const [favourite, setFavourite] = useState(
+    JSON.parse(localStorage.getItem("fav")) || [],
+  );
+  const navigae = useNavigate();
 
-  const navigae= useNavigate();
+  const { recipes, setRecipes } = useContext(recipeContext);
+
+  const params = useParams();
+  const recipe = recipes.find(
+    (recipe) => Number(recipe.id) === Number(params.id),
+  );
 
   const { register, handleSubmit } = useForm({
     defaultValues: {
@@ -25,32 +31,70 @@ const SingleRecipe = () => {
   });
 
   const submitHandler = (data) => {
-    const index = recipes.findIndex((r) => r.id === recipe.id); // we cannot use id directly because it is a string from params, so we need to find the index of the recipe in the array. 
-    const copydata= [...recipes];
+    const index = recipes.findIndex((r) => r.id === recipe.id); // we cannot use id directly because it is a string from params, so we need to find the index of the recipe in the array.
+    const copydata = [...recipes];
     copydata[index] = { ...copydata[index], ...data };
     setRecipes(copydata);
     toast.success("Recipe updated successfully!");
-  }
+  };
 
   const deleteRecipe = (id) => {
-    const updatedRecipes= recipes.filter((recipe)=> recipe.id!== id);
+    const updatedRecipes = recipes.filter((recipe) => recipe.id !== id);
     setRecipes(updatedRecipes);
     toast.success("Recipe deleted successfully!");
+
+    // We also need to deleted the recipe from the favourite list if it is there.
+    const updatedFav = favourite.filter((fav) => fav.id !== id);
+    setFavourite(updatedFav);
+    localStorage.setItem("fav", JSON.stringify(updatedFav));
+
     setTimeout(() => {
       navigae("/recipes");
     }, 1500);
+  };
+
+  if (recipe === undefined || recipe.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-800 text-white p-6">Loading...</div>
+    );
   }
 
-  if(recipe=== undefined || recipe.length===0){
-    return <div className="min-h-screen bg-gray-800 text-white p-6">Loading...</div>;
-  }
+  const isFav = favourite.find((f) => f.id === recipe?.id);
+
+  const favHandler = () => {
+    const copyFav = [...favourite, recipe];
+    setFavourite(copyFav);
+    console.log("recipe", recipe);
+    console.log("copyFav", copyFav);
+    localStorage.setItem("fav", JSON.stringify(copyFav));
+  };
+
+  const unFavHandler = () => {
+    const filteredFav = favourite.filter((f) => f.id !== recipe.id);
+    setFavourite(filteredFav);
+    console.log("recipe", recipe);
+    console.log("filteredFav", filteredFav);
+    localStorage.setItem("fav", JSON.stringify(filteredFav));
+  };
 
   return (
     <>
       <div className="min-h-screen bg-gray-800 text-white p-6">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Left Side - Recipe Preview */}
-          <div className="bg-gray-700 rounded-2xl overflow-hidden shadow-lg">
+
+          <div className="bg-gray-700 rounded-2xl overflow-hidden shadow-lg  relative">
+            {isFav ? (
+              <i
+                onClick={unFavHandler}
+                className="ri-heart-fill absolute top-4 right-4 text-2xl cursor-pointer text-red-500 bg-black rounded-full p-2"
+              ></i>
+            ) : (
+              <i
+                onClick={favHandler}
+                className="ri-heart-line absolute top-4 right-4 text-2xl cursor-pointer text-red-500 bg-black rounded-full p-2"
+              ></i>
+            )}
             <img
               src={recipe?.image}
               alt={recipe?.title}
@@ -86,7 +130,7 @@ const SingleRecipe = () => {
           <div className="bg-gray-700 rounded-2xl p-6 shadow-lg">
             <h2 className="text-2xl font-bold mb-6">Edit Recipe</h2>
 
-            <form onSubmit={handleSubmit(submitHandler)}  className="space-y-4">
+            <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
               <div>
                 <label className="block mb-2 text-sm text-gray-300">
                   Image URL
@@ -164,7 +208,7 @@ const SingleRecipe = () => {
               <button
                 type="submit"
                 className="w-full bg-red-500 text-white font-semibold py-3 rounded-lg hover:opacity-90 active:scale-95 transition cursor-pointer"
-                onClick={()=>{
+                onClick={() => {
                   deleteRecipe(recipe.id);
                 }}
               >

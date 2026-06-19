@@ -31,7 +31,6 @@ const Create = () => {
 
   return (
     <form className="text-white" onSubmit={handleSubmit(submitHandler)}>
-      <small className="text-red-500">This is how the error look</small>
       <input
         {...register("image")}
         type="url"
