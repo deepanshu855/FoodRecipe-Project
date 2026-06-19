@@ -13,10 +13,16 @@ const Create = () => {
 
   const submitHandler = (data) => {
     data.id = nanoid();
-    setRecipes([...recipes, data]);
+    data.isUserCreated = true; // To store only user created recipes in local storage, because we are fetching the recipes from an api and we cannot store them in local storage, so we need to differentiate between user created recipes and api fetched recipes.
+
+    const updatedRecipes = [...recipes, data];
+    setRecipes(updatedRecipes);
+
+    localStorage.setItem("recipes", JSON.stringify(updatedRecipes.filter((recipe) => recipe.isUserCreated))); // Filter only user created recipes
     toast.success("Recipe created successfully!", {
       autoClose: 1000,
     });
+    
     reset();
     setTimeout(() => {
       navigate("/recipes");

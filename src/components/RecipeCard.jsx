@@ -14,7 +14,7 @@ const RecipeCard = ({ recipe }) => {
       <img
         src={recipe.image}
         alt={recipe.title}
-        className="w-full h-48 object-cover"
+        className="w-full h-48 object-cover object-center"
       />
 
       <div className="p-4">
