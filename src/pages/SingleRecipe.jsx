@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 const SingleRecipe = () => {
   const { recipes, setRecipes } = useContext(recipeContext);
   const params = useParams();
-  console.log(params.id);
   const recipe = recipes.find((recipe) => Number(recipe.id) === Number(params.id));
 
   const navigae= useNavigate();

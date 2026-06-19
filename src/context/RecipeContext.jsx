@@ -4,11 +4,11 @@ import { getRandomRecipe } from "../api/recipeApi";
 export const recipeContext = createContext();
 
 const RecipeContext = ({ children }) => {
-  const [recipes, setRecipes] = useState([]);
+  const [recipes, setRecipes] = useState(localStorage.getItem("recipes") ? JSON.parse(localStorage.getItem("recipes")) : []); 
 
   const getRecipes= async()=>{
     const data= await getRandomRecipe();
-    setRecipes(data);
+    setRecipes([...data, ...recipes]);
   }
 
   useEffect(()=>{
