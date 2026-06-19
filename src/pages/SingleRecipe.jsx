@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { Heart, Trash2, Edit } from "lucide-react";
 
 const SingleRecipe = () => {
   const [favourite, setFavourite] = useState(
@@ -79,45 +80,58 @@ const SingleRecipe = () => {
 
   return (
     <>
-      <div className="min-h-screen bg-gray-800 text-white p-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Side - Recipe Preview */}
-
-          <div className="bg-gray-700 rounded-2xl overflow-hidden shadow-lg  relative">
+      {/* Natural flow wrapper - no forced heights that cause scroll bugs */}
+      <div className="w-full max-w-6xl mx-auto px-4 flex items-center justify-center animate-in fade-in zoom-in-95 duration-500">
+        {/* 2-Column Compact Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 w-full">
+          {/* Left Side - Recipe Preview Card */}
+          <div className="flex flex-col bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative group">
+            {/* Favorite Toggle Button */}
             {isFav ? (
-              <i
+              <button
                 onClick={unFavHandler}
-                className="ri-heart-fill absolute top-4 right-4 text-2xl cursor-pointer text-red-500 bg-black rounded-full p-2"
-              ></i>
+                className="absolute top-4 right-4 z-10 p-2.5 bg-slate-900/80 backdrop-blur-md rounded-full border border-slate-800 hover:scale-110 active:scale-95 transition-all shadow-lg shadow-black/50"
+              >
+                <Heart className="w-5 h-5 text-orange-500 fill-orange-500" />
+              </button>
             ) : (
-              <i
+              <button
                 onClick={favHandler}
-                className="ri-heart-line absolute top-4 right-4 text-2xl cursor-pointer text-red-500 bg-black rounded-full p-2"
-              ></i>
+                className="absolute top-4 right-4 z-10 p-2.5 bg-slate-900/80 backdrop-blur-md rounded-full border border-slate-800 hover:scale-110 active:scale-95 transition-all shadow-lg shadow-black/50 hover:border-orange-500/50 group/btn"
+              >
+                <Heart className="w-5 h-5 text-slate-400 group-hover/btn:text-orange-500 transition-colors" />
+              </button>
             )}
-            <img
-              src={recipe?.image}
-              alt={recipe?.title}
-              className="w-full h-80 object-cover"
-            />
 
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-3xl font-bold">{recipe?.title}</h2>
+            {/* Compact Image Header */}
+            <div className="w-full h-40 sm:h-48 overflow-hidden bg-slate-950 border-b border-slate-800">
+              <img
+                src={recipe?.image}
+                alt={recipe?.title}
+                className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+              />
+            </div>
 
-                <span className="bg-gray-600 px-3 py-1 rounded-full text-sm">
+            {/* Details Content */}
+            <div className="p-5 sm:p-6 flex flex-col flex-1">
+              <div className="flex justify-between items-start gap-4 mb-3">
+                <h2 className="text-2xl font-bold text-white tracking-tight line-clamp-1">
+                  {recipe?.title}
+                </h2>
+                <span className="px-3 py-1 text-xs font-semibold rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20 whitespace-nowrap">
                   {recipe?.category}
                 </span>
               </div>
 
-              <p className="text-gray-300 leading-relaxed mb-6">
+              <p className="text-slate-400 text-sm leading-relaxed mb-4 line-clamp-2">
                 {recipe?.description}
               </p>
 
-              <div>
-                <h3 className="font-semibold text-lg mb-2">Ingredients</h3>
-
-                <p className="text-gray-300">
+              <div className="mt-auto pt-4 border-t border-slate-800/60">
+                <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                  Ingredients
+                </h3>
+                <p className="text-slate-300 text-sm line-clamp-2 leading-relaxed">
                   {Array.isArray(recipe?.ingredients)
                     ? recipe.ingredients.join(", ")
                     : recipe?.ingredients}
@@ -126,71 +140,53 @@ const SingleRecipe = () => {
             </div>
           </div>
 
-          {/* Right Side - Edit Form */}
-          <div className="bg-gray-700 rounded-2xl p-6 shadow-lg">
-            <h2 className="text-2xl font-bold mb-6">Edit Recipe</h2>
+          {/* Right Side - Compact Edit Form */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 sm:p-6 shadow-2xl flex flex-col">
+            <div className="flex items-center gap-2 mb-5">
+              <Edit className="w-5 h-5 text-orange-500" />
+              <h2 className="text-xl font-bold text-white tracking-tight">
+                Edit Recipe
+              </h2>
+            </div>
 
-            <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
-              <div>
-                <label className="block mb-2 text-sm text-gray-300">
-                  Image URL
-                </label>
-
-                <input
-                  {...register("image")}
-                  type="url"
-                  placeholder="Enter image url"
-                  className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                />
+            <form
+              onSubmit={handleSubmit(submitHandler)}
+              className="flex flex-col gap-3.5 flex-1"
+            >
+              {/* Input Row 1: Image & Title */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                    Image URL
+                  </label>
+                  <input
+                    {...register("image")}
+                    type="url"
+                    placeholder="Image URL"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                    Title
+                  </label>
+                  <input
+                    {...register("title")}
+                    type="text"
+                    placeholder="Recipe title"
+                    className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                  />
+                </div>
               </div>
 
+              {/* Category */}
               <div>
-                <label className="block mb-2 text-sm text-gray-300">
-                  Title
-                </label>
-
-                <input
-                  {...register("title")}
-                  type="text"
-                  placeholder="Recipe title"
-                  className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm text-gray-300">
-                  Description
-                </label>
-
-                <textarea
-                  {...register("description")}
-                  rows="4"
-                  placeholder="Recipe description"
-                  className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 resize-none focus:outline-none focus:ring-2 focus:ring-gray-500"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm text-gray-300">
-                  Ingredients
-                </label>
-
-                <textarea
-                  {...register("ingredients")}
-                  rows="3"
-                  placeholder="Milk, Eggs, Flour..."
-                  className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 resize-none focus:outline-none focus:ring-2 focus:ring-gray-500"
-                />
-              </div>
-
-              <div>
-                <label className="block mb-2 text-sm text-gray-300">
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
                   Category
                 </label>
-
                 <select
                   {...register("category")}
-                  className="w-full p-3 rounded-lg bg-gray-800 border border-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-slate-300 text-sm focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all cursor-pointer"
                 >
                   <option value="breakfast">Breakfast</option>
                   <option value="lunch">Lunch</option>
@@ -199,21 +195,51 @@ const SingleRecipe = () => {
                 </select>
               </div>
 
-              <button
-                type="submit"
-                className="w-full bg-blue-500 text-white font-semibold py-3 rounded-lg hover:opacity-90 active:scale-95 transition cursor-pointer"
-              >
-                Save Changes
-              </button>
-              <button
-                type="submit"
-                className="w-full bg-red-500 text-white font-semibold py-3 rounded-lg hover:opacity-90 active:scale-95 transition cursor-pointer"
-                onClick={() => {
-                  deleteRecipe(recipe.id);
-                }}
-              >
-                Delete Recipe
-              </button>
+              {/* Description Textarea */}
+              <div className="flex-1 flex flex-col">
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                  Description
+                </label>
+                <textarea
+                  {...register("description")}
+                  placeholder="Recipe description"
+                  className="w-full flex-1 px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all resize-none min-h-[60px]"
+                />
+              </div>
+
+              {/* Ingredients Textarea */}
+              <div className="flex-1 flex flex-col">
+                <label className="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">
+                  Ingredients
+                </label>
+                <textarea
+                  {...register("ingredients")}
+                  placeholder="Milk, Eggs, Flour..."
+                  className="w-full flex-1 px-3 py-2 bg-slate-950 border border-slate-800 rounded-lg text-white text-sm placeholder-slate-600 focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 transition-all resize-none min-h-[60px]"
+                />
+              </div>
+
+              {/* Action Buttons Side-by-Side */}
+              <div className="flex items-center gap-3 mt-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-2.5 rounded-lg hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-orange-500/20 text-sm"
+                >
+                  Save Changes
+                </button>
+
+                {/* Preserved your exact type="submit" and onClick logic */}
+                <button
+                  type="submit"
+                  onClick={() => {
+                    deleteRecipe(recipe.id);
+                  }}
+                  className="flex items-center justify-center gap-2 flex-1 bg-slate-950 border border-red-500/20 text-red-500 font-bold py-2.5 rounded-lg hover:bg-red-500/10 hover:border-red-500/50 active:scale-[0.98] transition-all duration-300 text-sm"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </button>
+              </div>
             </form>
           </div>
         </div>
